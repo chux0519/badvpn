@@ -1,0 +1,3 @@
+[submodule "universal-android-toolchain"]
+	path = universal-android-toolchain
+	url = https://github.com/mokhtarabadi/universal-android-toolchain.git

@@ -169,7 +169,9 @@ else ()
     add_definitions(-DBADVPN_THREADWORK_USE_PTHREAD)
     add_definitions(-DBADVPN_THREAD_SAFE=1)
 
-    link_libraries(rt pthread)
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
+        link_libraries(rt pthread)
+    endif()
 
     if (EMSCRIPTEN)
         add_definitions(-DBADVPN_EMSCRIPTEN)
