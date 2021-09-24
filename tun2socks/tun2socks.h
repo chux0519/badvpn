@@ -50,3 +50,11 @@
 // or far-away SOCKS server could require 300 ms to connect, and a chatty client (e.g.
 // STUN) could send a packet every 20 ms, so a default limit of 16 seems reasonable.
 #define SOCKS_UDP_SEND_BUFFER_PACKETS 16
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+int start (int argc, char **argv);
+#ifdef __cplusplus
+}
+#endif

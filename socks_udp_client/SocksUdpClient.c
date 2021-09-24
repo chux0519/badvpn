@@ -235,6 +235,8 @@ void recv_if_handler_send (
             return;
         } break;
     }
+
+    BLog(BLOG_DEBUG, "fuck here");
     
     // check remaining data
     if (data_len > o->udp_mtu) {
@@ -555,7 +557,7 @@ int get_dns_id (BAddr *remote_addr, const uint8_t *data, int data_len)
 }
 
 int SocksUdpClient_Init (SocksUdpClient *o, int udp_mtu, int max_connections,
-    int send_buf_size, btime_t keepalive_time, BAddr server_addr,
+    int send_buf_size, btime_t keepalive_time, BAddr server_addr, BAddr dnsgw,
     const struct BSocksClient_auth_info *auth_info, size_t num_auth_info,
     BReactor *reactor, void *user, SocksUdpClient_handler_received handler_received)
 {
@@ -565,6 +567,7 @@ int SocksUdpClient_Init (SocksUdpClient *o, int udp_mtu, int max_connections,
     
     // init simple things
     o->server_addr = server_addr;
+    o->dnsgw = dnsgw;
     o->auth_info = auth_info;
     o->num_auth_info = num_auth_info;
     o->num_connections = 0;

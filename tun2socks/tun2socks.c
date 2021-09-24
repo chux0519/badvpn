@@ -103,6 +103,9 @@ struct {
     #endif
     int loglevel;
     int loglevels[BLOG_NUM_CHANNELS];
+    int tunfd;
+    int tunmtu;
+    char *dnsgw;
     char *tundev;
     char *netif_ipaddr;
     char *netif_netmask;
@@ -215,6 +218,9 @@ LinkedList1 tcp_clients;
 // number of clients
 int num_clients;
 
+// Address of dnsgw
+BAddr dnsgw;
+
 static void terminate (void);
 static void print_help (const char *name);
 static void print_version (void);
@@ -253,7 +259,7 @@ static int client_socks_recv_send_out (struct tcp_client *client);
 static err_t client_sent_func (void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void udp_send_packet_to_device (void *unused, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
 
-int main (int argc, char **argv)
+int start (int argc, char **argv)
 {
     if (argc <= 0) {
         return 1;
@@ -343,11 +349,24 @@ int main (int argc, char **argv)
     }
     
     // init TUN device
-    if (!BTap_Init(&device, &ss, options.tundev, device_error_handler, NULL, 1)) {
-        BLog(BLOG_ERROR, "BTap_Init failed");
-        goto fail3;
+    if (options.tunfd > 0) {
+        struct BTap_init_data init_data;
+        init_data.dev_type = BTAP_DEV_TUN;
+        init_data.init_type = BTAP_INIT_FD;
+        init_data.init.fd.fd = options.tunfd;
+        init_data.init.fd.mtu = options.tunmtu;
+
+        if (!BTap_Init2(&device, &ss, init_data, device_error_handler, NULL)) {
+            BLog(BLOG_ERROR, "BTap_Init2 failed");
+            goto fail3;
+        }
+    } else {
+        if (!BTap_Init(&device, &ss, options.tundev, device_error_handler, NULL, 1)) {
+            BLog(BLOG_ERROR, "BTap_Init failed");
+            goto fail3;
+        }
     }
-    
+
     // NOTE: the order of the following is important:
     // first device writing must evaluate,
     // then lwip (so it can send packets to the device),
@@ -397,7 +416,7 @@ int main (int argc, char **argv)
 
         // init SOCKS UDP client
         SocksUdpClient_Init(&socks_udp_client, udp_mtu, DEFAULT_UDPGW_MAX_CONNECTIONS,
-            SOCKS_UDP_SEND_BUFFER_PACKETS, UDPGW_KEEPALIVE_TIME, socks_server_addr,
+            SOCKS_UDP_SEND_BUFFER_PACKETS, UDPGW_KEEPALIVE_TIME, socks_server_addr, dnsgw,
             socks_auth_info, socks_num_auth_info, &ss, NULL, udp_send_packet_to_device);
     } else {
         udp_mode = UdpModeNone;
@@ -513,6 +532,9 @@ void print_help (const char *name)
         #endif
         "        [--loglevel <0-5/none/error/warning/notice/info/debug>]\n"
         "        [--channel-loglevel <channel-name> <0-5/none/error/warning/notice/info/debug>] ...\n"
+        "        [--tunfd <fd>]\n"
+        "        [--tunmtu <mtu>]\n"
+        "        [--dnsgw <dns_gateway_address>]\n"
         "        [--tundev <name>]\n"
         "        --netif-ipaddr <ipaddr>\n"
         "        --netif-netmask <ipnetmask>\n"
@@ -554,6 +576,9 @@ int parse_arguments (int argc, char *argv[])
     for (int i = 0; i < BLOG_NUM_CHANNELS; i++) {
         options.loglevels[i] = -1;
     }
+    options.tunfd = 0;
+    options.tunmtu = 1500;
+    options.dnsgw = NULL;
     options.tundev = NULL;
     options.netif_ipaddr = NULL;
     options.netif_netmask = NULL;
@@ -644,6 +669,36 @@ int parse_arguments (int argc, char *argv[])
             }
             options.loglevels[channel] = loglevel;
             i += 2;
+        }
+        else if (!strcmp(arg, "--tunfd")) {
+            if (1 >= argc - i) {
+                fprintf(stderr, "%s: requires an argument\n", arg);
+                return 0;
+            }
+            if ((options.tunfd = atoi(argv[i + 1])) <= 0) {
+                fprintf(stderr, "%s: wrong argument\n", arg);
+                return 0;
+            }
+            i++;
+        }
+        else if (!strcmp(arg, "--tunmtu")) {
+            if (1 >= argc - i) {
+                fprintf(stderr, "%s: requires an argument\n", arg);
+                return 0;
+            }
+            if ((options.tunmtu = atoi(argv[i + 1])) <= 0) {
+                fprintf(stderr, "%s: wrong argument\n", arg);
+                return 0;
+            }
+            i++;
+        }
+        else if (!strcmp(arg, "--dnsgw")) {
+            if (1 >= argc - i) {
+                fprintf(stderr, "%s: requires an argument\n", arg);
+                return 0;
+            }
+            options.dnsgw = argv[i + 1];
+            i++;
         }
         else if (!strcmp(arg, "--tundev")) {
             if (1 >= argc - i) {
@@ -784,7 +839,29 @@ int parse_arguments (int argc, char *argv[])
             return 0;
         }
     }
+
+    if (!options.tundev && options.tunfd == 0) {
+        fprintf(stderr, "--tundev or --tunfd is required\n");
+        return 0;
+    }
+
+    if (options.socks5_udp && !options.dnsgw) {
+        fprintf(stderr, "--socks5-udp need --dnsgw unfortunately!\n");
+        return 0;
+    }
     
+    // resolve dnsgw addr
+    if (options.dnsgw) {
+        if (!BAddr_Parse2(&dnsgw, options.dnsgw, NULL, 0, 0)) {
+            BLog(BLOG_ERROR, "dnsgw addr: BAddr_Parse2 failed");
+            return 0;
+        }
+        if (dnsgw.type != BADDR_TYPE_IPV4) {
+            BLog(BLOG_ERROR, "dnsgw addr: must be an IPv4 address");
+            return 0;
+        }
+    }
+
     return 1;
 }
 

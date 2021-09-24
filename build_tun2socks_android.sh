@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ANDROID_USE_SHARED_LIBC=OFF
+export ANDROID_USE_SHARED_LIBC=ON
 . universal-android-toolchain/toolchain.sh "$@"
 
 rm -rf build && mkdir build && cd build
@@ -15,6 +15,6 @@ android_cmake_command \
 
 "$CMAKE/bin/cmake" --build . --config Debug
 
-cp tun2socks/libbadvpn-tun2socks.a $OUTPUT_DIR/
+find ./ -type f -name "*.so" -exec cp {} $OUTPUT_DIR/ \;
 
 cp $CURRENT_DIR/tun2socks/tun2socks.h $OUTPUT_DIR/../
