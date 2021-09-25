@@ -200,7 +200,7 @@ void recv_if_handler_send (
     memcpy(&header, data, sizeof(header));
     data += sizeof(header);
     data_len -= sizeof(header);
-    
+
     // parse address
     BAddr remote_addr;
     switch (header.atyp) {
@@ -236,8 +236,6 @@ void recv_if_handler_send (
         } break;
     }
 
-    BLog(BLOG_DEBUG, "fuck here");
-    
     // check remaining data
     if (data_len > o->udp_mtu) {
         BLog(BLOG_ERROR, "too much data");
@@ -439,7 +437,7 @@ void connection_send (struct SocksUdpClient_connection *con,
 {
     ASSERT(data_len >= 0)
     ASSERT(data_len <= con->client->udp_mtu)
-    
+
     if (con->dns_id >= 0) {
         // So far, this connection has only sent a single DNS query.
         int new_dns_id = get_dns_id(&remote_addr, data, data_len);

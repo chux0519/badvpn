@@ -259,7 +259,11 @@ static int client_socks_recv_send_out (struct tcp_client *client);
 static err_t client_sent_func (void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void udp_send_packet_to_device (void *unused, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
 
+#ifdef __ANDROID__
 int start (int argc, char **argv)
+#else
+int main (int argc, char **argv)
+#endif
 {
     if (argc <= 0) {
         return 1;
