@@ -2,13 +2,15 @@
 
 . universal-android-toolchain/toolchain.sh "$@"
 
-SRCDIR=$(pwd)
+SOURCE_DIR=$(pwd)
 
-rm -rf build && mkdir build && cd build
+rm -rf build && mkdir build && cd build || exit
 
-CFLAGS="${CFLAGS} -fPIC -static -std=gnu99"
-INCLUDES=("-I${SRCDIR}" "-I${SRCDIR}/lwip/src/include/ipv4" "-I${SRCDIR}/lwip/src/include/ipv6" "-I${SRCDIR}/lwip/src/include" "-I${SRCDIR}/lwip/custom")
-DEFS=(-DBADVPN_THREAD_SAFE=0 -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE -DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL -DBADVPN_LITTLE_ENDIAN -DANDROID)
+CFLAGS="${CFLAGS} -static -fPIC -std=gnu99"
+INCLUDES=("-I${SOURCE_DIR}" "-I${SOURCE_DIR}/lwip/src/include/ipv4" "-I${SOURCE_DIR}/lwip/src/include/ipv6" "-I${SOURCE_DIR}/lwip/src/include" "-I${SOURCE_DIR}/lwip/custom")
+DEFS=(-DBADVPN_THREAD_SAFE=0 -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE -DBADVPN_LITTLE_ENDIAN -DANDROID)
+
+[[ $API = "16" ]] && DEFS=( "${DEFS[@]}" -DBADVPN_USE_SELFPIPE -DBADVPN_USE_POLL ) || DEFS=( "${DEFS[@]}" -DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL )
 
 SOURCES="
 base/BLog_syslog.c
@@ -74,7 +76,7 @@ socks_udp_client/SocksUdpClient.c
 OBJS=()
 for f in $SOURCES; do
     obj=${f//\//_}.o
-    "${CC}" -c ${CFLAGS} "${INCLUDES[@]}" "${DEFS[@]}" "${SRCDIR}/${f}" -o "${obj}"
+    "${CC}" -c ${CFLAGS} "${INCLUDES[@]}" "${DEFS[@]}" "${SOURCE_DIR}/${f}" -o "${obj}"
     OBJS=("${OBJS[@]}" "${obj}")
 done
 
