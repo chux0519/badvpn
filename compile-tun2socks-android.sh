@@ -6,7 +6,7 @@ SRCDIR=$(pwd)
 
 rm -rf build && mkdir build && cd build
 
-CFLAGS="${CFLAGS} -fPIC -std=gnu99"
+CFLAGS="${CFLAGS} -fPIC -static -std=gnu99"
 INCLUDES=("-I${SRCDIR}" "-I${SRCDIR}/lwip/src/include/ipv4" "-I${SRCDIR}/lwip/src/include/ipv6" "-I${SRCDIR}/lwip/src/include" "-I${SRCDIR}/lwip/custom")
 DEFS=(-DBADVPN_THREAD_SAFE=0 -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE -DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL -DBADVPN_LITTLE_ENDIAN -DANDROID)
 
@@ -79,3 +79,4 @@ for f in $SOURCES; do
 done
 
 $AR rcs $OUTPUT_DIR/libbadvpn.a "${OBJS[@]}"
+$RANLIB $OUTPUT_DIR/libbadvpn.a

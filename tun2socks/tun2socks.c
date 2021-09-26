@@ -221,9 +221,6 @@ int num_clients;
 // Address of dnsgw
 BAddr dnsgw;
 
-static void terminate (void);
-static void print_help (const char *name);
-static void print_version (void);
 static int parse_arguments (int argc, char *argv[]);
 static int process_arguments (void);
 static void signal_handler (void *unused);
@@ -849,10 +846,10 @@ int parse_arguments (int argc, char *argv[])
         return 0;
     }
 
-    if (options.socks5_udp && !options.dnsgw) {
-        fprintf(stderr, "--socks5-udp need --dnsgw unfortunately!\n");
-        return 0;
-    }
+    //if (options.socks5_udp && !options.dnsgw) {
+        //fprintf(stderr, "--socks5-udp need --dnsgw unfortunately!\n");
+        //return 0;
+    //}
     
     // resolve dnsgw addr
     if (options.dnsgw) {
@@ -1205,7 +1202,7 @@ int process_device_udp_packet (uint8_t *data, int data_len)
             // construct addresses
             BAddr_InitIPv4(&local_addr, ipv4_header.source_address, udp_header.source_port);
             BAddr_InitIPv4(&remote_addr, ipv4_header.destination_address, udp_header.dest_port);
-            
+
             // if transparent DNS is enabled, any packet arriving at out netif
             // address to port 53 is considered a DNS packet
             is_dns = (options.udpgw_transparent_dns &&
