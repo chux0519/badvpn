@@ -1,6 +1,8 @@
 /*
  * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
- * 
+ * Contributions:
+ * Making as Android library: Copyright (C) Mohammad Reza Mokhtarabadi <mmokhtarabadi@gmail.com>
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * 1. Redistributions of source code must retain the above copyright
@@ -54,7 +56,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-int start (int argc, char **argv);
+int start_tun2socks (int argc, char **argv);
 void terminate (void);
 void print_help (const char *name);
 void print_version (void);

@@ -2,6 +2,7 @@
  * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
  * Contributions:
  * Transparent DNS: Copyright (C) Kerem Hadimli <kerem.hadimli@gmail.com>
+ * Making as Android library: Copyright (C) Mohammad Reza Mokhtarabadi <mmokhtarabadi@gmail.com>
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -257,7 +258,7 @@ static err_t client_sent_func (void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void udp_send_packet_to_device (void *unused, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
 
 #ifdef __ANDROID__
-int start (int argc, char **argv)
+int start_tun2socks (int argc, char **argv)
 #else
 int main (int argc, char **argv)
 #endif
