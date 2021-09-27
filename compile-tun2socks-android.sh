@@ -9,10 +9,9 @@ rm -rf build && mkdir build && cd build || exit
 CFLAGS="${CFLAGS} -static -fPIC -std=gnu99"
 INCLUDES=("-I${SOURCE_DIR}" "-I${SOURCE_DIR}/lwip/src/include/ipv4" "-I${SOURCE_DIR}/lwip/src/include/ipv6" "-I${SOURCE_DIR}/lwip/src/include" "-I${SOURCE_DIR}/lwip/custom")
 DEFS=(-DBADVPN_THREADWORK_USE_PTHREAD -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE)
-DEFS+=(-DBADVPN_LITTLE_ENDIAN -DBADVPN_THREAD_SAFE)
+DEFS+=(-DBADVPN_LITTLE_ENDIAN -DBADVPN_THREAD_SAFE=1)
+DEFS+=(-DBADVPN_USE_SELFPIPE -DBADVPN_USE_POLL)
 DEFS+=(-DNDEBUG -DANDROID)
-
-[[ $API == "16" ]] && DEFS+=(-DBADVPN_USE_SELFPIPE -DBADVPN_USE_POLL) || DEFS+=(-DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL)
 
 SOURCES="
 base/BLog_syslog.c
@@ -82,5 +81,5 @@ for f in $SOURCES; do
   OBJS=("${OBJS[@]}" "${obj}")
 done
 
-$AR rcs $OUTPUT_DIR/libbadvpn.a "${OBJS[@]}"
-$RANLIB $OUTPUT_DIR/libbadvpn.a
+$AR rcs "$OUTPUT_DIR/libbadvpn.a" "${OBJS[@]}"
+$RANLIB "$OUTPUT_DIR/libbadvpn.a"

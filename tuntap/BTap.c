@@ -320,8 +320,12 @@ fail0:
     #endif
     
     #if defined(BADVPN_LINUX) || defined(BADVPN_FREEBSD)
-    
+
+    #ifndef __ANDROID__
     o->close_fd = (init_data.init_type != BTAP_INIT_FD);
+    #else
+    o->close_fd = 0;
+    #endif
     
     switch (init_data.init_type) {
         case BTAP_INIT_FD: {

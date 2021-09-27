@@ -1149,7 +1149,7 @@ void BReactor_RemoveFileDescriptor (BReactor *bsys, BFileDescriptor *bs)
     bs->active = 0;
 
     #ifdef BADVPN_USE_EPOLL
-    
+
     // delete epoll entry
     struct epoll_event event;
     memset(&event, 0, sizeof(event));

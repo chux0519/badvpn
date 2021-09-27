@@ -1,6 +1,32 @@
-**This repository has been archived and is not being maintained by the author any longer.**
-
 # BadVPN
+
+### Building for Android
+To build tun2socks for android run ` ./compile-tun2socks-android.sh` script with 2 arguments arch and api for example to build for arm64 architecture run ` ./compile-tun2socks-android.sh arm64 21` after building you can find static `libbadvpn.a` in `./output` directory
+
+### Using in Android
+Create your native project with Android Studio and copy `./tun2socks/tun2socks.h` file and `.output` directory to `your-project/src/main/cpp/`, then link `libbadvpn.a` library to your project for example in cmake add below lines:
+```cmake
+include_directories(.)
+
+# badvpn static lib
+add_library(badvpn
+        STATIC
+        IMPORTED)
+set_target_properties(
+        badvpn
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/output/${ANDROID_ABI}/libbadvpn.a)
+
+```
+Then link `badvpn` with your library like:
+```cmake
+target_link_libraries(
+        native
+        badvpn
+        ${log-lib})
+```
+
+After importing, you can include `tun2socks.h` header, and run `start(int argc, char **argv)` like when run `main()` function in executable binary. Also see this [sample project](https://github.com/mokhtarabadi/universal-android-tun2socks)
 
 ## Introduction
 
