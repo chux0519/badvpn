@@ -56,10 +56,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-int start_tun2socks (int argc, char **argv);
-void terminate (void);
-void print_help (const char *name);
-void print_version (void);
+int tun2socks_start (int argc, char **argv);
+void tun2socks_terminate (void);
+void tun2socks_print_help (const char *name);
+void tun2socks_print_version (void);
 #ifdef __cplusplus
 }
 #endif

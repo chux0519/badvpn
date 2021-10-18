@@ -1,6 +1,9 @@
 #!/bin/bash
 
-. universal-android-toolchain/toolchain.sh "$@"
+export ANDROID_USE_SHARED_LIBC=OFF
+export WORKING_DIRECTORY=$(pwd)/android
+
+. ./universal-android-toolchain/toolchain.sh "$@"
 
 SOURCE_DIR=$(pwd)
 
@@ -81,5 +84,14 @@ for f in $SOURCES; do
   OBJS=("${OBJS[@]}" "${obj}")
 done
 
-$AR rcs "$OUTPUT_DIR/libbadvpn.a" "${OBJS[@]}"
-$RANLIB "$OUTPUT_DIR/libbadvpn.a"
+$AR rcs "$OUTPUT_DIR/libtun2socks.a" "${OBJS[@]}"
+$RANLIB "$OUTPUT_DIR/libtun2socks.a"
+
+# I know this is ugly, but works!
+PEGASOCKS_ANDROID_CPP_DIR=$HOME/Develop/Projects/pegasocks-android/app/src/main/cpp/prebuilt/
+
+mkdir -p $PEGASOCKS_ANDROID_CPP_DIR/include/tun2socks
+mkdir -p $PEGASOCKS_ANDROID_CPP_DIR/lib/$ABI
+
+cp ../tun2socks/tun2socks.h $PEGASOCKS_ANDROID_CPP_DIR/include/tun2socks
+cp "$OUTPUT_DIR/libtun2socks.a" $PEGASOCKS_ANDROID_CPP_DIR/lib/$ABI

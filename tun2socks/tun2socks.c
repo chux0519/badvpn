@@ -258,7 +258,7 @@ static err_t client_sent_func (void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void udp_send_packet_to_device (void *unused, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
 
 #ifdef __ANDROID__
-int start_tun2socks (int argc, char **argv)
+int tun2socks_start (int argc, char **argv)
 #else
 int main (int argc, char **argv)
 #endif
@@ -273,18 +273,18 @@ int main (int argc, char **argv)
     // parse command-line arguments
     if (!parse_arguments(argc, argv)) {
         fprintf(stderr, "Failed to parse arguments\n");
-        print_help(argv[0]);
+        tun2socks_print_help(argv[0]);
         goto fail0;
     }
     
     // handle --help and --version
     if (options.help) {
-        print_version();
-        print_help(argv[0]);
+        tun2socks_print_version();
+        tun2socks_print_help(argv[0]);
         return 0;
     }
     if (options.version) {
-        print_version();
+        tun2socks_print_version();
         return 0;
     }
     
@@ -505,7 +505,7 @@ fail0:
     return 1;
 }
 
-void terminate (void)
+void tun2socks_terminate (void)
 {
     ASSERT(!quitting)
     
@@ -518,7 +518,7 @@ void terminate (void)
     BReactor_Quit(&ss, 1);
 }
 
-void print_help (const char *name)
+void tun2socks_print_help (const char *name)
 {
     printf(
         "Usage:\n"
@@ -946,8 +946,8 @@ void signal_handler (void *unused)
     ASSERT(!quitting)
     
     BLog(BLOG_NOTICE, "termination requested");
-    
-    terminate();
+
+    tun2socks_terminate();
 }
 
 BAddr baddr_from_lwip (const ip_addr_t *ip_addr, uint16_t port_hostorder)
@@ -1069,7 +1069,7 @@ void lwip_init_job_hadler (void *unused)
     
 fail:
     if (!quitting) {
-        terminate();
+        tun2socks_terminate();
     }
 }
 
@@ -1112,8 +1112,8 @@ void device_error_handler (void *unused)
     ASSERT(!quitting)
     
     BLog(BLOG_ERROR, "device error");
-    
-    terminate();
+
+    tun2socks_terminate();
     return;
 }
 

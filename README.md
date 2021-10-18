@@ -1,28 +1,28 @@
 # BadVPN
 
 ### Building for Android
-To build tun2socks for android run ` ./compile-tun2socks-android.sh` script with 2 arguments arch and api for example to build for arm64 architecture run ` ./compile-tun2socks-android.sh arm64 21` after building you can find static `libbadvpn.a` in `./output` directory
+To build tun2socks for android run ` ./compile-tun2socks-android.sh` script with 2 arguments arch and api for example to build for arm64 architecture run ` ./compile-tun2socks-android.sh arm64 21` after building you can find static `libtun2socks.a` in `./output` directory
 
 ### Using in Android
-Create your native project with Android Studio and copy `./tun2socks/tun2socks.h` file and `.output` directory to `your-project/src/main/cpp/`, then link `libbadvpn.a` library to your project for example in cmake add below lines:
+Create your native project with Android Studio and copy `./tun2socks/tun2socks.h` file and `.output` directory to `your-project/src/main/cpp/`, then link `libtun2socks.a` library to your project for example in cmake add below lines:
 ```cmake
 include_directories(.)
 
 # badvpn static lib
-add_library(badvpn
+add_library(tun2socks
         STATIC
         IMPORTED)
 set_target_properties(
         badvpn
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/output/${ANDROID_ABI}/libbadvpn.a)
+        ${CMAKE_SOURCE_DIR}/output/${ANDROID_ABI}/libtun2socks.a)
 
 ```
-Then link `badvpn` with your library like:
+Then link `tun2socks` with your library like:
 ```cmake
 target_link_libraries(
         native
-        badvpn
+        tun2socks
         ${log-lib})
 ```
 
