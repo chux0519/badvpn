@@ -276,7 +276,7 @@ int main (int argc, char **argv)
         tun2socks_print_help(argv[0]);
         goto fail0;
     }
-    
+
     // handle --help and --version
     if (options.help) {
         tun2socks_print_version();
@@ -556,7 +556,7 @@ void tun2socks_print_help (const char *name)
     );
 }
 
-void print_version (void)
+void tun2socks_print_version (void)
 {
     printf(GLOBAL_PRODUCT_NAME" "PROGRAM_NAME" "GLOBAL_VERSION"\n"GLOBAL_COPYRIGHT_NOTICE"\n");
 }

@@ -88,10 +88,15 @@ $AR rcs "$OUTPUT_DIR/libtun2socks.a" "${OBJS[@]}"
 $RANLIB "$OUTPUT_DIR/libtun2socks.a"
 
 # I know this is ugly, but works!
-PEGASOCKS_ANDROID_CPP_DIR=$HOME/Develop/Projects/pegasocks-android/app/src/main/cpp/prebuilt/
+PROJECTS_ANDROID_CPP_DIR=("$HOME/Develop/Projects/"{"universal-android-tun2socks","pegasocks-android"}"/app/src/main/cpp/prebuilt/")
 
-mkdir -p $PEGASOCKS_ANDROID_CPP_DIR/include/tun2socks
-mkdir -p $PEGASOCKS_ANDROID_CPP_DIR/lib/$ABI
+for OUTPUT in "${PROJECTS_ANDROID_CPP_DIR[@]}"; do
+  if [ -d "$OUTPUT" ]; then
 
-cp ../tun2socks/tun2socks.h $PEGASOCKS_ANDROID_CPP_DIR/include/tun2socks
-cp "$OUTPUT_DIR/libtun2socks.a" $PEGASOCKS_ANDROID_CPP_DIR/lib/$ABI
+    mkdir -p "$OUTPUT/include/tun2socks"
+    mkdir -p "$OUTPUT/lib/$ABI"
+
+    cp ../tun2socks/tun2socks.h "$OUTPUT/include/tun2socks"
+    cp "$OUTPUT_DIR/libtun2socks.a" "$OUTPUT/lib/$ABI"
+  fi
+done
