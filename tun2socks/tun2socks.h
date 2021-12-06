@@ -58,8 +58,7 @@ extern "C" {
 #endif
 int tun2socks_start (int argc, char **argv);
 void tun2socks_terminate (void);
-void tun2socks_print_help (const char *name);
-void tun2socks_print_version (void);
+void tun2socks_get_version (char* version);
 #ifdef __cplusplus
 }
 #endif

@@ -256,6 +256,8 @@ static void client_socks_recv_handler_done (struct tcp_client *client, int data_
 static int client_socks_recv_send_out (struct tcp_client *client);
 static err_t client_sent_func (void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void udp_send_packet_to_device (void *unused, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
+static void tun2socks_print_version (void);
+static void tun2socks_print_help (const char *name);
 
 #ifdef __ANDROID__
 int tun2socks_start (int argc, char **argv)
@@ -559,6 +561,11 @@ void tun2socks_print_help (const char *name)
 void tun2socks_print_version (void)
 {
     printf(GLOBAL_PRODUCT_NAME" "PROGRAM_NAME" "GLOBAL_VERSION"\n"GLOBAL_COPYRIGHT_NOTICE"\n");
+}
+
+void tun2socks_get_version (char* version)
+{
+    sprintf(version, GLOBAL_VERSION);
 }
 
 int parse_arguments (int argc, char *argv[])
